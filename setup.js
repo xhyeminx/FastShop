@@ -2,7 +2,7 @@
 
 var shasum = require('crypto').createHash('sha1');
 var fs = require('fs');
-var lwip = require('lwip');
+//var lwip = require('lwip');
 var sqlite3 = require('sqlite3').verbose();
 var exists = fs.existsSync(__dirname + '/fastshop.db');
 var db = new sqlite3.Database('fastshop.db');

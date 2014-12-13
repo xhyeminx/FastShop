@@ -25,7 +25,6 @@
 		"method-override": "latest",
 		"underscore" : "latest",
 		"humanize" : "latest",
-		"lwip" : "latest",
 		"q" : "latest",
 		"jstoxml" : "latest"
 	},
