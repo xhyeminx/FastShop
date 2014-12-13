@@ -1,0 +1,18 @@
+{{#yield-pageclass}}login{{/yield-pageclass}}
+<h1>로그인</h1>
+<form action="/login" method="POST" class="signup clearbox">
+	<fieldset>
+		<label for="email">이메일</label>
+		<input type="text" id="email" name="email">
+		<label for="password">패스워드</label>
+		<input type="password" id="password" name="password">
+		<button type="submit">로그인</button>
+	</fieldset>
+	<div class="find">
+		<a href="#find-username">아이디찾기</a> | <a href="#find-password">패스워드찾기</a>
+	</div>
+	<div class="signin">
+		회원이 아니세요?
+		<a href="/signup">회원가입</a>
+	</div>
+</form>

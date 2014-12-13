@@ -1,0 +1,29 @@
+{{#yield-pageclass}}login{{/yield-pageclass}}
+<h1>회원가입</h1>
+<form action="/signup" method="POST" class="signup clearbox">
+	<fieldset>
+		<label for="email">이메일</label>
+		<input type="text" id="email" name="email" placeholder="abc@abc.com">
+		<label for="password">패스워드</label>
+		<input type="password" id="password" name="password">
+		<label for="password_confirm">패스워드 확인</label>
+		<input type="password" id="password_confirm">
+	</fieldset>
+	<fieldset class="optional">
+		<legend>선택사항</legend>
+		<label for="tel">전화번호</label>
+		<input type="tel" id="tel" name="tel" placeholder="010-1234-5678">
+		<label for="birth">생년월일</label>
+		<input type="date" id="birth" name="birth">
+	</fieldset>
+	<fieldset>
+		<button type="submit">회원 가입</button>
+	</fieldset>
+	<div class="find">
+		<a href="#find-username">아이디찾기</a> | <a href="#find-password">패스워드찾기</a>
+	</div>
+	<div class="signin">
+		이미 회원이세요?
+		<a href="/login">로그인</a>
+	</div>
+</form>

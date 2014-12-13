@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>FastShop</title>
+	<link rel="stylesheet" type="text/css" href="/css/main.css">
+	<link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css">
+	<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Josefin+Sans:300' rel='stylesheet' type='text/css'>
+	{{{yield-styles}}}
+	<script src="/js/jquery-1.11.1.min.js"></script>
+	{{{yield-scripts}}}
+</head>
+<body>
+	<header id="globalHeader" class="clearbox">
+		<div class="container">
+			<div class="header-bar">
+				<form action="/browse/all" class="search">
+					<input type="search" name="q" placeholder="Search..." value="{{query.q}}">
+					<button type="submit"><i class="fa fa-search"></i></button>
+				</form>
+			</div>
+			<ul class="links">
+				{{#user}}<li><a><b>{{user.name}}</b>님 안녕하세요</a></li>{{/user}}
+				<li>{{#user}}<a href="/logout">로그아웃</a>{{/user}}{{^user}}<a href="/login">로그인</a>{{/user}}</li>
+				{{^user}}<li><a href="/signup">회원가입</a></li>{{/user}}
+				<li><a href="/faq">고객센터</a><ul>
+					<li><a href="/faq">자주묻는질문</a></li>
+					<li><a href="/">1:1 문의하기</a></li>
+					<li><a href="/refund">환불안내</a></li>
+				</ul></li>
+				<li class="cart"><a href="/cart"><i class="fa fa-shopping-cart"></i> 장바구니 <em class="count">0</em></a>
+					<div class="items">
+						<ul>
+							<li>아이템1</li>
+							<li>아이템2</li>
+							<li>아이템3</li>
+						</ul>
+						<a href="/cart">Go to Cart</a>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</header>
+	<main id="main">
+		<div class="container">
+			<h1 class="logo"><a href="/"><img src="/img/logo.png"></a></h1>
+			<div class="menubar clearbox">
+				<ul>
+					<li><a href="/browse/all">What's new</a></li>
+					{{#categories}}
+					<li><a href="/browse/{{slug}}">{{name}}</a>{{#children.length}}<ul class="submenu">{{#children}}<li><a href="/browse/{{slug}}">{{name}}</a></li>{{/children}}</ul>{{/children.length}}</li>
+					{{/categories}}
+					<li><a href="/browse/all?sale=true">Sale</a><ul class="submenu">{{#categories}}<li><a href="/browse/{{slug}}?sale=true">{{name}}</a>{{/categories}}</ul></li>
+				</ul>
+			</div>
+			<div id="content" class="{{yield-pageclass}}">
+			{{{ yield }}}
+			</div>
+		</div>
+	</main>
+	<footer id="globalFooter" class="clearbox">
+		<div class="container">
+			<img src="/img/logo_small.png" class="logo">
+			<section>
+				<h3>Information</h3>
+				<ul>
+					<li><a href="#">회사소개</a></li>
+					<li><a href="#">인재채용</a></li>
+					<li><a href="#">제휴문의</a></li>
+					<li><a href="#">환불 및 교환</a></li>
+				</ul>
+			</section>
+			<section>
+				<h3>Privacy</h3>
+				<ul>
+					<li><a href="#">개인정보 취급방침</a></li>
+					<li><a href="#">이메일 무단수집거부</a></li>
+					<li><a href="#">청보년 보호 정책</a></li>
+				</ul>
+			</section>
+			<section>
+				<h3>Browse Shop</h3>
+				<ul>
+					{{#categories}}
+					<li><a href="/browse/{{slug}}">{{name}}</a></li>
+					{{/categories}}
+					<li><a href="/browse/all?sale=true">Sale</a></li>
+				</ul>
+			</section>
+			<section class="connect">
+				<h3>Stay Connect</h3>
+				<ul>
+					<li><a href="#"><i class="fa fa-facebook-square"></i> 페이스북</a></li>
+					<li><a href="#"><i class="fa fa-twitter-square"></i> 트위터</a></li>
+					<li><a href="#"><i class="fa fa-instagram"></i> 인스타그램</a></li>
+					<li><a href="#"><i class="fa fa-pinterest-square"></i> 핀터레스트</a></li>
+				</ul>
+			</section>
+			<address>&copy;Copyright 2014 Fast Shop. All Rights Reserved.</address>
+		</div>
+	</footer>
+</body>
+</html>

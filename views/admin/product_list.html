@@ -1,0 +1,36 @@
+<div class="page-header">
+	<h1 style="font-size: 1.5em">상품 목록</h1>
+	<a href="/admin/products/+" style="float:right;margin-top:-2em"><i class="fa fa-plus"></i> 새 상품 추가</a>
+</div>
+<div class="panel panel-default">
+<table class="table">
+	<thead>
+		<tr>
+			<th style="width:10em">#</th>
+			<th style="width:10em">분류</th>
+			<th>상품</th>
+			<th style="width:5em">수정</th>
+			<th style="width:5em">삭제</th>
+		</tr>
+	</thead>
+	<tbody>
+	{{#products}}
+		<tr>
+			<td>{{attrs.id}}</td>
+			<td>{{category.name}}</td>
+			<td>{{attrs.name}}</td>
+			<td><a href="/admin/products/{{id}}" class="edit">수정</a></td>
+			<td><a href="/admin/products/{{id}}" class="del">삭제</a></td>
+		</tr>
+	{{/products}}
+	{{^products}}
+	<td colspan="4" style="padding:30px;text-align:center">등록된 상품이 없습니다.</td>
+	{{/products}}
+	</tbody>
+</table>
+</div>
+
+<script>
+jQuery(function($){
+});
+</script>

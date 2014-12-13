@@ -1,0 +1,245 @@
+<div class="page-header">
+	<h1 style="font-size: 1.5em">
+		{{#product}}상품 정보 <small>: {{name}}</small>{{/product}}
+		{{^product}}상품 추가{{/product}}
+	</h1>
+</div>
+<form action="/admin/products" method="POST" role="form">
+	<input type="hidden" name="id" value="{{product.id}}">
+	<div class="form-group">
+		<label for="productName">상품 이름</label>
+		<input type="text" id="productName" name="name" value="{{product.attrs.name}}" class="form-control" placeholder="상품 이름을 입력하세요.">
+	</div>
+	<div class="form-group">
+		<label for="productCategory">상품 분류</label>
+		<select id="productCategory" name="category_id" class="form-control" data-value="{{product.attrs.category_id}}">
+			{{#categories}}
+			<option value="{{id}}">{{name}}</option>
+				{{#children}}
+				<option value="{{id}}">&nbsp; {{name}}</option>
+				{{/children}}
+			{{/categories}}
+		</select>
+	</div>
+	<div class="form-group">
+		<label for="productDesc">상품 설명</label>
+		<textarea id="productDesc" name="description" class="form-control" placeholder="상품 설명을 입력하세요.">{{product.attrs.description}}</textarea>
+	</div>
+	<div class="form-group">
+		<label for="productPrice">상품 가격</label>
+		<div class="row">
+			<div class="col-md-6">
+				<div class="input-group">
+					<input type="text" id="productPrice" name="price" value="{{product.attrs.price}}" class="form-control" placeholder="판매 가격">
+					<span class="input-group-addon">원</span>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="input-group">
+					<input type="text" name="retail_price" value="{{product.attrs.retail_price}}" class="form-control" placeholder="소매 가격">
+					<span class="input-group-addon">원</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="form-group">
+		<label>상품 옵션</label>
+		<div class="panel panel-default">
+			<table class="table options">
+			<thead>
+				<tr>
+					<td>색상</td>
+					<td>사이즈</td>
+					<td style="width:8em">재고수량</td>
+					<td style="width:13em">&nbsp;</td>
+				</tr>
+			</thead>
+			<tbody>
+				{{#product.attrs.options}}
+				<tr data-id="{{id}}">
+					<td><input type="text" class="form-control color_" value="{{attrs.color}}"></td>
+					<td><input type="text" class="form-control size_" value="{{attrs.size}}"></td>
+					<td><input type="text" class="form-control quantity_" value="{{attrs.stock}}"></td>
+					<td class="action">
+						<a href="#up" class="up"><i class="fa fa-arrow-up"></i> 위로</a>
+						<a href="#down" class="down"><i class="fa fa-arrow-down"></i> 아래로</a>
+						<a href="#delete" class="delete"><i class="fa fa-trash"></i> 삭제</a>
+					</td>
+				</tr>
+				{{/product.attrs.options}}
+				<tr class="tpl" style="display:none">
+					<td><input type="text" class="form-control color_"></td>
+					<td><input type="text" class="form-control size_"></td>
+					<td><input type="text" class="form-control quantity_"></td>
+					<td class="action">
+						<a href="#up" class="up"><i class="fa fa-arrow-up"></i> 위로</a>
+						<a href="#down" class="down"><i class="fa fa-arrow-down"></i> 아래로</a>
+						<a href="#delete" class="delete"><i class="fa fa-trash"></i> 삭제</a>
+					</td>
+				</tr>
+				{{^product.attrs.options}}
+				<tr class="empty">
+					<td colspan="4">등록된 옵션이 없습니다.</td>
+				</tr>
+				{{/product.attrs.options}}
+			</tbody>
+			</table>
+		</div>
+		<button type="button" id="add_option" class="btn btn-default"><i class="fa fa-plus"></i> 새 옵션 추가</button>
+	</div>
+	<div class="form-group">
+		<label>상품 이미지<small></small></label>
+		<ul class="image-list">
+			{{#product.attrs.images_m}}
+			<li class="img" style="background-image:url({{url}})" data-name="{{name}}">
+				<a href="#delete" class="delete"><i class="fa fa-trash"></i> 삭제</a>
+			</li>
+			{{/product.attrs.images_m}}
+			<li class="add">
+				<a href="#add"><i class="fa fa-plus"></i> 이미지 추가</a>
+				<input type="file" id="upload" multiple accept="image/*">
+			</li>
+			<li class="img tpl" style="display:none">
+				<a href="#delete" class="delete"><i class="fa fa-remove"></i> 삭제</a>
+			</li>
+		</ul>
+	</div>
+	<button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 저장하기</button>
+	<button type="reset" class="btn btn-default"><i class="fa fa-list"></i> 목록으로</button>
+</form>
+<script>
+jQuery(function($){
+	var $cate = $('#productCategory');
+	if ($cate.attr('data-value')) {
+		$cate.val($cate.attr('data-value'));
+	}
+
+	$('#add_option').click(function(){
+		var $tr = $('tr.tpl').clone();
+		$tr.removeClass('tpl').show().insertBefore('tr.tpl');
+		$('tr.empty').hide();
+	});
+
+	$('table.options')
+		.on('click', 'a.delete', function(event){
+			event.preventDefault();
+			$(this).closest('tr').remove();
+			if (!$('table.options tr:visible').length) {
+				$('table.options tr.empty').show();
+			}
+		})
+		.on('click', 'a.up', function(event){
+			event.preventDefault();
+			var $tr = $(this).closest('tr'), $prev = $tr.prev('tr');
+			if ($prev.length) $prev.before($tr);
+		})
+		.on('click', 'a.down', function(event){
+			event.preventDefault();
+			var $tr = $(this).closest('tr'), $next = $tr.next('tr');
+			if ($next.length) $next.after($tr);
+		});
+
+	$('#upload').on('change', function(){
+		var file, reader, i, c, $upload = $('#upload');
+
+		for (i=0, c = this.files.length; i < c; i++) {
+			file = this.files[i];
+
+			reader = new FileReader();
+			reader.onload = (function(f){
+				return function(event){
+					var $img = $('li.tpl').clone().removeClass('tpl').insertBefore('li.add'), $upload = $('#upload');
+
+					$upload.clone(true).insertBefore($upload);
+					$upload.remove();
+
+					$img
+						.data('file', f)
+						.append($upload.removeAttr('id').addClass('uploaded'))
+						.css('background-image', 'url('+event.target.result+')')
+						.fadeIn();
+				};
+			})(file);
+			reader.readAsDataURL(this.files[i]);
+		}
+	});
+	$('ul.image-list')
+		.on('mouseenter', 'li.img', function(){ $(this).addClass('hover'); })
+		.on('mouseleave', 'li.img', function(){ $(this).removeClass('hover'); })
+		.on('click', 'a.delete', function(event){
+			event.preventDefault();
+			$(this).closest('li').remove();
+		});
+
+	$('button:reset').click(function(){
+		location.href = '/admin/products';
+	});
+
+	$('form').on('submit', function(event){
+		var $form = $(this), data = new FormData(), i, c;
+
+		event.preventDefault();
+
+		for (i=0, c=this.elements.length; i < c; i++) {
+			el = this.elements[i];
+
+			if (el.name) {
+				data.append(el.name, $.trim(el.value));
+			}
+		}
+
+		// options
+		var options = [];
+		$('table.options tbody > tr:not(.empty):visible').each(function(){
+			var $tr = $(this), obj;
+
+			obj = {
+				id : $tr.attr('data-id'),
+				name : $tr.find('input.color_').val() + '|' + $tr.find('input.size_').val(),
+				quantity : $tr.find('input.quantity_').val()
+			};
+
+			options.push(obj);
+		});
+		data.append('options', JSON.stringify(options));
+
+		// images
+		var images = [], idx = 1;
+		$('li.img:visible').each(function(){
+			var $li = $(this), path = $li.attr('data-name');
+			if (path) {
+				images.push(path.replace(/^.+\//, ''));
+			} else {
+				images.push('!' + idx++);
+				data.append('file', $li.data('file'));
+			}
+		});
+		data.append('images', images.join('\n'));
+
+		// disable submit button
+		$form.find(':submit').prop('disabled', true);
+
+		$.ajax({
+			url : $('form').attr('action'),
+			method : 'POST',
+			data : data,
+			processData : false,
+			contentType : false,
+			success : function(data) {
+				if (data.status == 'error') {
+					return alert(data.error);
+				}
+				
+				$('input[name="id"]').val(data.id);
+
+				$.each(data.options||[], function(idx, opt){
+					
+				});
+			},
+			complete : function() {
+				$form.find(':submit').prop('disabled', false);
+			}
+		});
+	});
+});
+</script>

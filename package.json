@@ -1,0 +1,37 @@
+{
+	"name": "fastshop",
+	"description": "FastShop - A simple online store for the front-end class in FastCampus",
+	"version": "0.3.0",
+	"private": false,
+	"author": "Taegon Kim <gonom9@gmail.com>",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/taggon/fastshop.git"
+	},
+	"engines": {
+		"node": "0.10.x",
+		"npm": "1.3.x"
+	},
+	"dependencies": {
+		"express": "4.x",
+		"express-session": "1.x",
+		"hogan-express": "latest",
+		"multer" : "latest",
+		"morgan": "latest",
+		"forever": "0.11.x",
+		"sqlite3": "3.x",
+		"body-parser": "latest",
+		"cookie-parser": "latest",
+		"method-override": "latest",
+		"underscore" : "latest",
+		"humanize" : "latest",
+		"lwip" : "latest",
+		"q" : "latest",
+		"jstoxml" : "latest"
+	},
+	"scripts": {
+		"postinstall" : "node setup.js",
+		"start" : "node server",
+		"reset" : "rm -f fastshop.db && rm -rf public/files/middle && rm -rf public/files/small && node setup.js"
+	}
+}

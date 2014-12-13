@@ -1,0 +1,47 @@
+{{#yield-pageclass}}category{{/yield-pageclass}}
+
+<aside>
+	{{#root_category}}
+	<h2>{{root_category.name}}</h2>
+	<ul>
+		{{#root_category.children}}
+		<li{{#is_active}} class="active"{{/is_active}}><a href="/browse/{{slug}}">{{name}}</a></li>
+		{{/root_category.children}}
+	</ul>
+	{{/root_category}}
+	{{^root_category}}
+	<h2>{{#in_sale}}Sale{{/in_sale}}{{^in_sale}}All{{/in_sale}}</h2>
+	<ul>
+		{{#categories}}
+		<li><a href="/browse/{{slug}}{{#in_sale}}?sale=true{{/in_sale}}">{{name}}</a></li>
+		{{/categories}}
+	</ul>
+	{{/root_category}}
+</aside>
+<section>
+	<div class="breadcrumb">
+		<a href="/">Home</a>
+		{{#root_category}} <i class="fa fa-angle-right"></i> <a href="/browse/{{slug}}">{{name}}</a>{{/root_category}}
+		{{#category}}{{#parent_id}} <i class="fa fa-angle-right"></i> <a href="/browse/{{slug}}">{{name}}</a>{{/parent_id}}{{/category}}
+	</div>
+
+	<ul class="stream clearbox">
+	{{#products}}
+	<li>
+		<a href="/browse/{{category.slug}}/{{id}}">
+			<figure data-images="{{#images_m}}{{url}};{{/images_m}}">
+				<img src="{{images_m.0.url}}">
+			</figure>
+			<strong>{{name}}</strong>
+			{{#retail_price}}<span class="retail-price">₩{{retail_price$}}</span>{{/retail_price}}
+			<span class="price">₩{{price$}}</span>
+		</a>
+	</li>
+	{{/products}}
+	{{^products}}
+	<li class="empty">
+		No items found.
+	</li>
+	{{/products}}
+	</ul>
+</section>
