@@ -35,11 +35,18 @@ module.exports = function(app) {
 		});
 	});
 	
+	app.get('/logout', function(req, res){
+		if (req.session.user) {
+			delete req.session.user;
+		}
+		res.redirect('/');
+	});
+
 	app.post('/api/logout', function(req, res){
 		if (req.session.user) {
 			delete req.session.user;
 		}
-		res.json({ status : 'OK' })
+		res.json({ status : 'OK' });
 	});
 
 	app.get('/signup', function(req, res){
