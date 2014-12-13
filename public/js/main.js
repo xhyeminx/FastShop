@@ -79,4 +79,52 @@ jQuery(function($){
 
 		});
 
+	/*
+	- type은	POST
+	- url은 /api/login
+	- 보내야 할 데이터는 email, password
+	- 받는 데이터는 JSON 형식
+	*/
+	
+	$('form.signup').on('submit', function(event){
+		event.preventDefault();
+		
+		var $this = $(this);
+		var email = $('#email').val();
+		var password = $('#password').val();
+
+		// 과제1 : email이나 password의 값이 빈 문자열이면
+		// 입력하라고 경고한 후 함수를 종료한다.
+
+		$.ajax({
+			type : 'POST',
+			url  : '/api/login',
+			data : {email:email, password:password},
+			dataType : 'json', // 과제2 : dataType에서 사용할 수 있는 값은? (API 문서 참조)
+			success : function(data) {
+				console.log(data);
+			},
+			error : function() {
+				
+			},
+			complete : function() {
+				
+			}
+		});
+	});
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

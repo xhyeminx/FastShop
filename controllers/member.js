@@ -18,7 +18,6 @@ module.exports = function(app) {
 	// JSON API
 	app.post('/api/login', function(req, res){
 		postLogin(req, res, function(result){
-			if ('error' in result) res.status(500);
 			res.json(result);
 		});
 	});
@@ -28,8 +27,7 @@ module.exports = function(app) {
 		postLogin(req, res, function(result){
 			var data = '<?xml version="1.0" encoding="UTF-8?>';
 			data += jstoxml.toXML({result:result});
-			
-			if ('error' in result) res.status(500);
+
 			res.type('xml');
 			res.end(data);
 		});
