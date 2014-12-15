@@ -50,12 +50,13 @@ module.exports = function(app) {
 	});
 
 	app.get('/browse/:category/:product_id', function(req, res){
-		console.log('params', req.params);
 		commonTemplateVars(req, res);
 
 		var count = 2;
 
 		app.db.get('SELECT * FROM products WHERE id = ?', req.params.product_id, function(err, product){
+            if (err) return res.status(500).end(err);
+
 			res.locals.product = product;
 
 			util.populateProduct(product, function(){
@@ -66,6 +67,7 @@ module.exports = function(app) {
 				_.each(rows, util.populateProduct);
 				res.locals.suggestion = rows;
 				if (--count === 0) res.render('product');
+                console.log(count, 'all');
 			});
 		});
 	});
@@ -86,24 +88,53 @@ module.exports = function(app) {
 	});
 
 	// product options
-	app.get('/api/products/:product_id/options', function(req, res){
+	app.get('/api/products/:product_id/options(/:color)?', function(req, res){
+		app.db.all('SELECT * FROM product_options WHERE product_id = ? ORDER BY `order`', req.params.product_id, function(err, options){
+			if (err) return res.json({error:'데이터베이스 에러: ' + err});
+			
+			var opts = {};
+			
+			options.forEach(function(opt){
+				var names = opt.name.split('|');
+				
+				if (!opts.hasOwnProperty(names[0])) {
+					opts[names[0]] = [];
+				}
+
+				opts[names[0]].push(opt);
+				opt.name = names[1];				
+			});
+			
+			if (req.params.color) {
+				opts = opts[req.params[0]] || [];
+			} else {
+				opts = Object.keys(opts);
+			}
+
+			res.json({options:opts});
+		});
 	});
 
 	function commonTemplateVars(req, res) {
 		// current category
-		_.each(app.locals.categories, function(cate) {
-			var parent = cate;
+		app.locals.categories.forEach(function(cate){
+			cate = _.extend({}, cate, {is_active:false});
 
-			cate.is_active = false;
-			if (cate.slug !== req.params.category) {
-				_.each(cate.children, function(c){ c.is_active = false; });
-				cate = _.findWhere(cate.children, {slug: req.params.category});
-			}
+			cate.children.forEach(function(ct, idx){
+				ct = _.extend({}, ct, {is_active:false});
+				cate.children[idx] = ct;
 
-			if (cate) {
+				if (ct.slug === req.params.category) {
+					res.locals.category = ct;
+					res.locals.root_category = cate;
+					ct.is_active = true;
+				}
+			});
+
+			if (cate.slug === req.params.category) {
 				cate.is_active = true;
 				res.locals.category = cate;
-				res.locals.root_category = parent;
+				res.locals.root_category = cate;
 			}
 		});
 

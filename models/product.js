@@ -44,11 +44,11 @@ module.exports = function(app) {
 
 			var images = (this.attrs.images||'').split('\n');
 			this.attrs.images_l = app._.map(images, function(img, idx){ return {index:idx, name:img, url:'/files/'+img}; });
-			this.attrs.images_m = app._.map(images, function(img, idx){ return {index:idx, name:img, url:'/files/middle/'+img}; });
-			this.attrs.images_s = app._.map(images, function(img, idx){ return {index:idx, name:img, url:'/files/small/'+img}; });
+			this.attrs.images_m = app._.map(images, function(img, idx){ return {index:idx, name:img, url:'/resize/434x772/'+img}; });
+			this.attrs.images_s = app._.map(images, function(img, idx){ return {index:idx, name:img, url:'/resize/204x362/'+img}; });
 		}
 	});
-	
+
 	app.models.Product = Product;
 
 	return Product;

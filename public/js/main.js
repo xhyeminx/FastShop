@@ -95,20 +95,31 @@ jQuery(function($){
 
 		// 과제1 : email이나 password의 값이 빈 문자열이면
 		// 입력하라고 경고한 후 함수를 종료한다.
+		
+		// 중복 전송이 안되도록 submit 버튼을 사용할 수 없게 설정
+		var $button = $this.find('button[type="submit"]');
+		$button.attr('disabled', 'disabled'); // <button type="submit" disabled="disabled">
+		// 또는 $button.prop('disabled', true);
 
+		// 로그인 Ajax 전송
 		$.ajax({
 			type : 'POST',
 			url  : '/api/login',
 			data : {email:email, password:password},
 			dataType : 'json', // 과제2 : dataType에서 사용할 수 있는 값은? (API 문서 참조)
 			success : function(data) {
-				console.log(data);
+				if ('error' in data) {
+					alert(data.error);
+				} else {
+					location.href = '/';
+				}
 			},
-			error : function() {
-				
+			error : function() {	
 			},
 			complete : function() {
-				
+				// submit 버튼을 다시 사용할 수 있게 설정
+				$button.removeAttr('disabled');
+				// 또는 $button.prop('disabled', false);
 			}
 		});
 	});

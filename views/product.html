@@ -1,5 +1,4 @@
 {{#yield-pageclass}}product{{/yield-pageclass}}
-
 <div class="clearbox">
 	<div class="slider col-md-7">
 		<ul class="thumbnail">
@@ -59,6 +58,8 @@
 
 <script>
 jQuery(function($){
+	var productID = '{{product.id}}';
+
 	$('.slider .thumbnail')
 		.on('click', 'a', function(event){
 			event.preventDefault();

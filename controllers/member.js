@@ -35,9 +35,12 @@ module.exports = function(app) {
 	
 	app.get('/logout', function(req, res){
 		if (req.session.user) {
-			delete req.session.user;
+			req.session.destroy(function(err){
+				res.redirect('/');
+			});
+		} else {
+			res.redirect('/login');
 		}
-		res.redirect('/');
 	});
 
 	app.post('/api/logout', function(req, res){
@@ -64,7 +67,7 @@ module.exports = function(app) {
 
 		app.models.User.findOne({$email:body.email}, function(err, user){
 			if (err) {
-				callback({ error : '데이터베이스 에러' });
+				callback({ error : '데이터베이스 에러: ' + err });
 				return false;
 			}
 			

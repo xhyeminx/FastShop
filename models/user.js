@@ -1,6 +1,6 @@
 'use strict';
 
-var shasum = require('crypto').createHash('sha1');
+var crypto = require('crypto');;
 
 module.exports = function(app) {
 	var Base = require(__dirname + '/../lib/model.js')(app);
@@ -10,7 +10,7 @@ module.exports = function(app) {
 		fields : ['email','name','password'],
 		defaults : {email:'', name:'', password:''},
 		isCorrectPwd : function(password) {
-			return this.attrs.password === shasum.update(password).digest('hex');
+			return this.attrs.password === crypto.createHash('sha1').update(password).digest('hex');
 		},
 		toJSON : function() {
 			return {
