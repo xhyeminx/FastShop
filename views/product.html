@@ -73,15 +73,5 @@ jQuery(function($){
 		event.preventDefault();
 		$(this).parent().toggleClass('collapsed').next('dd').toggleClass('collapsed');
 	});
-	
-	// 색상 옵션 가져오기
-	$.ajax({
-		type : 'GET',
-		url  : '/api/products/' + productID + '/options',
-		dataType : 'json',
-		success  : function(data) {
-			$('.color > select').html('<option>'+data.options.join('</option><option>')+'</option>');
-		}
-	});
 });
 </script>
