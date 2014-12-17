@@ -166,6 +166,12 @@ db.run('CREATE TABLE IF NOT EXISTS product_options (id INTEGER PRIMARY KEY AUTOI
 db.run('CREATE TABLE IF NOT EXISTS carts (user_id INTEGER, option_id INTEGER, quantity INTEGER)', function(){
 	db.run('CREATE INDEX cart_user ON carts (user_id)');
 	db.run('CREATE UNIQUE INDEX cart_id ON carts (user_id, option_id)');
+	
+	var stmt = db.prepare('INSERT INTO carts (user_id, option_id, quantity) VALUES (1, ?, 1)');
+	stmt.run(2);
+	stmt.run(10);
+	stmt.run(11);
+	stmt.finalize();
 });
 
 function slugify(text) {

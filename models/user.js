@@ -13,11 +13,7 @@ module.exports = function(app) {
 			return this.attrs.password === crypto.createHash('sha1').update(password).digest('hex');
 		},
 		toJSON : function() {
-			return {
-				id : this.attrs.user_id,
-				email : this.attrs.email,
-				name  : this.attrs.name
-			}
+			return app._.pick(this.attrs, 'id', 'email', 'name');
 		}
 	});
 	
