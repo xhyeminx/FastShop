@@ -147,7 +147,33 @@ a {
 	margin:0 10px;
 }
 #globalHeader .links > li.cart .items li {
+	clear:both;
 	border-bottom: 1px solid #eee;
+	height:48px;
+	padding:5px;
+}
+#globalHeader .links > li.cart .items li:after {
+	clear:both;
+}
+#globalHeader .links > li.cart .items li img {
+	float: left;
+	width: 48px;
+	height: 48px;
+	background-repeat:no-repeat;
+	background-size:cover;
+}
+#globalHeader .links > li.cart .items li strong,
+#globalHeader .links > li.cart .items li small {
+	display:block;
+	margin-left:54px;
+	line-height:28px;
+	width:146px;
+	white-space:nowrap;
+	overflow:hidden;
+	text-overflow:ellipsis;
+}
+#globalHeader .links > li.cart .items li small {
+	line-height:20px;
 }
 #globalHeader .links > li.cart .items > a {
 	display: block;
