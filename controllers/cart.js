@@ -41,6 +41,16 @@ module.exports = function(app) {
 						product.images_l = app._.map(images, function(url){ return {url:'/files/'+url} });
 						product.images_m = app._.map(images, function(url){ return {url:'/resize/434x772/'+url, width:434, height:772} });
 						product.images_s = app._.map(images, function(url){ return {url:'/resize/204x362/'+url, width:204, height:362} });
+						
+						app._.each(app.locals.categories, function(cate) {
+							var parent = cate;
+
+							cate = app._.findWhere(cate.children, {id: row.category_id});
+							if (cate && row.category_id === cate.id) {
+								product.category = cate;
+								return false;
+							}
+						});
 
 						rows[idx] = option;
 					});
