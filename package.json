@@ -29,9 +29,17 @@
 		"jimp" : "0.1.1",
 		"minimist": "1.1.0"
 	},
+	"devDependencies": {
+		"grunt-contrib-clean": "0.6.0",
+		"grunt-contrib-jshint": "0.10.0",
+		"grunt-contrib-qunit": "0.5.2",
+		"grunt-contrib-uglify": "0.6.0",
+		"grunt": "0.4.5"
+	},
 	"scripts": {
 		"postinstall" : "node setup.js",
 		"start" : "node server",
-		"reset" : "node setup.js --reset"
+		"reset" : "node setup.js --reset",
+		"test" : "grunt qunit"
 	}
 }
