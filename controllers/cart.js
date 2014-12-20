@@ -83,11 +83,11 @@ module.exports = function(app) {
 				if (row) {
 					sql = 'INSERT INTO carts (user_id, option_id, quantity) VALUES ($user_id, $option_id, $quantity)';
 				} else {
-					sql = 'UPDATE carts SET quantity=$quantity WHERE user_id=$user_id AND option_id=$option_id';
+					sql = 'UPDATE carts SET quantity=quantity+$quantity WHERE user_id=$user_id AND option_id=$option_id';
 				}
 				
 				app.db.run(sql, where, function(err){
-					if (err) return res.status(500).json({error:'데이터베이스 에러'});
+					if (err) return res.status(500).json({error:'데이터베이스 에러: '+err});
 					res.json({status:1, statusText:'OK'});
 				});
 			}
