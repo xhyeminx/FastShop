@@ -73,5 +73,55 @@ jQuery(function($){
 		event.preventDefault();
 		$(this).parent().toggleClass('collapsed').next('dd').toggleClass('collapsed');
 	});
+	
+	// 색상 옵션 가져오기
+	$.ajax({
+		type : 'GET',
+		url  : '/api/products/' + productID + '/options',
+		dataType : 'json',
+		success  : function(data) {
+			//$('.color > select').html('<option>'+data.options.join('</option><option>')+'</option>');
+			var html = '';
+			
+			for (var i=0; i < data.options.length; i++) {
+				html += '<option value="'+data.options[i]+'">' + data.options[i] + '</option>';
+			}
+			
+			$('.color > select').html(html);
+		}
+	});
+	
+	// 색상이 변경되면 사이즈 옵션 가져와서 보여주기
+	$('.color > select').on('change', function(event){
+		var $this = $(this), color = $this.val();
+		
+		// API : GET /api/products/PRODUCT_ID/options/색상으로 요청하면
+		// 사이즈 값과 해당하는 옵션 아이디를 알 수 있다.
+		// <option value="옵션아이디">사이즈</option>으로 셀렉트 박스의 옵션을 만들어 추가하라.
+	});
 });
 </script>
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
