@@ -13,7 +13,7 @@ var app = express();
 
 // configuration
 app.engine('html', require('hogan-express'));
-app.set('views', './views');
+app.set('views', './server/views');
 app.set('view engine', 'html');
 app.set('layout', 'layout');
 app.set('port', 3000);
@@ -70,15 +70,19 @@ app.use(function(req, res, next){
 });
 
 // load controllers
-fs.readdirSync(path.join(__dirname, 'controllers')).forEach(function(name){
-	require(path.join(__dirname , 'controllers' , name))(app);
-});
+(function(dir){
+	fs.readdirSync(dir).forEach(function(name){
+		require(path.join(dir, name))(app);
+	});
+})(path.join(__dirname, 'server', 'controllers'));
 
 // load models
-app.models = [];
-fs.readdirSync(path.join(__dirname, 'models')).forEach(function(name){
-	require(path.join(__dirname , 'models' , name))(app);
-});
+(function(dir){
+	app.models = [];
+	fs.readdirSync(dir).forEach(function(name){
+		require(path.join(dir, name))(app);
+	});
+})(path.join(__dirname, 'server', 'models'));
 
 // 404
 app.use(function(req, res, next){
