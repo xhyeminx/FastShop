@@ -9,7 +9,16 @@ var bodyParser   = require('body-parser');
 var methodOverride = require('method-override');
 var fs = require('fs'), path = require('path');
 var sqlite3 = require('sqlite3').verbose();
-var app = express();
+
+// app instance
+global.app = express();
+
+// libraries
+global._ = require('underscore');
+global.Q = require('Q');
+
+// setup database
+global.db = new sqlite3.Database('fastshop.db');
 
 // configuration
 app.engine('html', require('hogan-express'));
@@ -17,15 +26,11 @@ app.set('views', './server/views');
 app.set('view engine', 'html');
 app.set('layout', 'layout');
 app.set('port', 3000);
-
-// setup database
-app.db = new sqlite3.Database('fastshop.db');
-
-// common tasks
-require(path.join(__dirname, 'bootstrap'))(app);
+app.set('base', __dirname);
 
 // log
 app.use(logger('dev'));
+db.on('trace', function(sql){ console.info('[SQL] ', sql); });
 
 // static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -61,7 +66,7 @@ app.use(function(req, res, next){
 
 // \r\n to \n
 app.use(function(req, res, next){
-	app._.each(req.body, function(value, key){
+	_.each(req.body, function(value, key){
 		if (typeof value == 'string') {
 			req.body[key] = value.replace(/\r\n/g, '\n');
 		}
@@ -78,9 +83,9 @@ app.use(function(req, res, next){
 
 // load models
 (function(dir){
-	app.models = [];
 	fs.readdirSync(dir).forEach(function(name){
-		require(path.join(dir, name))(app);
+		var mod = require(path.join(dir, name));
+		global[mod.name] = mod.model;
 	});
 })(path.join(__dirname, 'server', 'models'));
 
@@ -92,6 +97,8 @@ app.use(function(req, res, next){
 
 // 500
 app.use(function(err, req, res, next){
+	console.log('[ERROR] ' + err.stack);
+
 	res.status(err.status || 500);
 	res.render('500', { error: err });
 });

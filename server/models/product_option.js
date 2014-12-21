@@ -1,8 +1,6 @@
 'use strict';
 
-module.exports = function(app) {
-	var Base = require(__dirname + '/../lib/model.js')(app);
-	
+module.exports = function() {	
 	var ProductOption = Base.extend({
 		table : 'product_options',
 		fields : ['product_id','name','stock','order','active'],
@@ -22,10 +20,14 @@ module.exports = function(app) {
 		save : function() {
 			this.attrs.name = this.attrs.color + '|' + this.attrs.size;
 			return Base.prototype.save.call(this);
+		},
+		toJSON : function() {
+			var obj = _.pick(this.attrs, 'name', 'stock', 'order', 'active');
+			obj.color = this.get('color');
+			obj.size  = this.get('size');
+			return obj;
 		}
 	});
 
-	app.models.ProductOption = ProductOption;
-
-	return ProductOption;
-};
+	return {name : 'ProductOption', model : ProductOption};
+}();

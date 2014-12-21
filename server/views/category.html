@@ -22,13 +22,13 @@
 	<div class="breadcrumb">
 		<a href="/">Home</a>
 		{{#root_category}} <i class="fa fa-angle-right"></i> <a href="/browse/{{slug}}">{{name}}</a>{{/root_category}}
-		{{#category}}{{#parent_id}} <i class="fa fa-angle-right"></i> <a href="/browse/{{slug}}">{{name}}</a>{{/parent_id}}{{/category}}
+		{{#category}}{{#parent}} <i class="fa fa-angle-right"></i> <a href="/browse/{{slug}}">{{name}}</a>{{/parent}}{{/category}}
 	</div>
 
 	<ul class="stream clearbox">
 	{{#products}}
 	<li>
-		<a href="/browse/{{category.slug}}/{{id}}">
+		<a href="{{url}}">
 			<figure data-images="{{#images_m}}{{url}};{{/images_m}}">
 				<img src="{{images_m.0.url}}">
 			</figure>

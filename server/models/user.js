@@ -2,9 +2,7 @@
 
 var crypto = require('crypto');;
 
-module.exports = function(app) {
-	var Base = require(__dirname + '/../lib/model.js')(app);
-	
+module.exports = function() {
 	var User = Base.extend({
 		table : 'users',
 		fields : ['email','name','password'],
@@ -13,11 +11,9 @@ module.exports = function(app) {
 			return this.attrs.password === crypto.createHash('sha1').update(password).digest('hex');
 		},
 		toJSON : function() {
-			return app._.pick(this.attrs, 'id', 'email', 'name');
+			return _.pick(this.attrs, 'id', 'email', 'name');
 		}
 	});
-	
-	app.models.User = User;
 
-	return User;
-};
+	return {name:'User', model:User};
+}();

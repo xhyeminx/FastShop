@@ -13,7 +13,7 @@ module.exports = function(app) {
 
 		var userId = req.session.user.id;
 
-		app.db.all('SELECT * FROM carts WHERE user_id=?', userId, function(err, rows){
+		db.all('SELECT * FROM carts WHERE user_id=?', userId, function(err, rows){
 			if (err) return res.status(500).json({error:'데이터베이스 에러'});
 
 			var ids = [], rowById = {};
@@ -22,7 +22,7 @@ module.exports = function(app) {
 				rowById[row.option_id] = row;
 			});
 
-			app.db.all(
+			db.all(
 				'SELECT o.id option_id, o.name option_name, o.stock, p.* FROM product_options o, products p WHERE o.id IN ('+ids.join(',')+') AND o.product_id=p.id',
 				function(err, rows) {
 					if (err) return res.status(500).json({error:'데이터베이스 에러'});
@@ -73,7 +73,7 @@ module.exports = function(app) {
 			$quantity : req.body.quantity || 1
 		};
 
-		app.db.get(
+		db.get(
 			'SELECT * FROM carts WHERE user_id=$user_id AND option_id=$option_id',
 			where,
 			function(err, row) {
@@ -86,7 +86,7 @@ module.exports = function(app) {
 					sql = 'UPDATE carts SET quantity=quantity+$quantity WHERE user_id=$user_id AND option_id=$option_id';
 				}
 				
-				app.db.run(sql, where, function(err){
+				db.run(sql, where, function(err){
 					if (err) return res.status(500).json({error:'데이터베이스 에러: '+err});
 					res.json({status:1, statusText:'OK'});
 				});
@@ -105,7 +105,7 @@ module.exports = function(app) {
 			$option_id : req.params.option_id
 		};
 		
-		app.db.get(
+		db.get(
 			'SELECT * FROM carts WHERE user_id=$user_id AND option_id=$option_id',
 			where,
 			function(err, row){
@@ -113,7 +113,7 @@ module.exports = function(app) {
 				
 				where.$quantity = req.body.quantity;
 				
-				app.db.run(
+				db.run(
 					'UPDATE carts SET quantity=$quantity WHERE user_id=$user_id AND option_id=$option_id',
 					where,
 					function(err) {
@@ -131,7 +131,7 @@ module.exports = function(app) {
 			return false;
 		}
 		
-		app.db.run(
+		db.run(
 			'DELETE FROM carts WHERE user_id=$user_id AND option_id=$option_id',
 			{$user_id:req.session.user.id, $option_id:req.body.option_id},
 			function(err) {

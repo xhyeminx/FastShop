@@ -1,22 +1,22 @@
 'use strict';
 
-module.exports = function(app){
-	var _ = app._, Q = app.Q;
+module.exports = function(){
 	var Base = function(){};
-	
+
 	Base.prototype = {
+		constructor : Base,
 		table : '',
 		attrs : {},
 		defaults : {},
-		fields : [],
+		fields   : [],
 		db : null,
 		_listeners : [],
 		initialize : function(){},
+		toJSON : function(){ return {} }
 	};
-	
+
 	Base.extend = function(definition) {
 		var initializer = function(attrs) {
-			this.db = app.db;
 			this.attrs = _.extend({}, this.defaults, attrs);
 			this.prevAttrs = _.clone(this.attrs);
 			this._listeners = [];
@@ -38,34 +38,44 @@ module.exports = function(app){
 		
 		return initializer;
 	};
-	
-	Base.get = function(id, callback) {
-		return this.find({$id:id}, callback);
+
+	Base.all = function(callback) {
+		return this.find({}, callback);
 	};
-	
+
+	Base.get = function(id, callback) {
+		return this.findOne({$id:id}, callback);
+	};
+
 	Base.find = function(where, callback) {
-		var sql = 'SELECT * FROM ' + this.prototype.table, condition = [];
+		var sql = 'SELECT * FROM ' + this.prototype.table, filter;
 		
 		if (!where) where = {};
+		filter = where.filter || [];
+		delete where.filter;
+
+		if (typeof filter == 'string') filter = [filter];
 
 		_.each(where, function(value, key){
 			if (key.substr(0,1) !== '$') return;
-			if (_.isArray(value)) {
+			if (Array.isArray(value)) {
 				value = _.map(value, function(v){ 
 					if (typeof v === 'string') return '\'' + v + '\'';
 					else return v;
 				});
-				condition.push('(' + key.substr(1) + ' IN (' + value.join(',') + '))');
+				filter.push('(' + key.substr(1) + ' IN (' + value.join(',') + '))');
 			} else {
-				condition.push('(' + key.substr(1) + ' = ' + key + ')');
+				filter.push('(' + key.substr(1) + ' = ' + key + ')');
 			}
 		});
 		
-		if (condition.length) sql += ' WHERE ' + condition.join(' AND ');
+		if (filter.length) sql += ' WHERE ' + filter.join(' AND ');
+
 		if (where.orderBy) {
 			sql += ' ORDER BY ' + where.orderBy;
 			delete where.orderBy;
 		}
+
 		if (where.limit) {
 			sql += ' LIMIT ' + where.limit;
 			delete where.limit;
@@ -73,17 +83,18 @@ module.exports = function(app){
 
 		var defer = Q.defer(), Class = this;
 
-		app.db.all(sql, where, function(err, rows){
+		db.all(sql, where, function(err, rows){
 			if (err) return defer.reject(err);
+
 			rows = _.map(rows, function(row){ return new Class(row); });
 			defer.resolve(rows);
-			
+
 			if (_.isFunction(callback)) callback(rows);
 		});
-		
+
 		return defer.promise;
 	};
-	
+
 	Base.findOne = function(where, callback) {
 		var _where = _.extend({}, where, {limit:1}), defer = Q.defer(), Class = this;
 
@@ -99,11 +110,7 @@ module.exports = function(app){
 
 		return defer.promise;
 	};
-	
-	Base.all = function(callback) {
-		return this.find({}, callback);
-	};
-	
+
 	Base.prototype.getChanges = function() {
 		var attr, prev, diff = {};
 		
@@ -118,7 +125,7 @@ module.exports = function(app){
 
 		return attr;
 	};
-	
+
 	Base.prototype.save = function() {
 		var self = this, defer = Q.defer(), fields = {}, sql;
 
@@ -142,7 +149,7 @@ module.exports = function(app){
 		} else {
 			// insert new data
 			var attr, keys;
-			
+
 			attr = _.pick.apply(_, [this.attrs].concat(this.fields));
 			keys = _.keys(attr);
 			sql = 'INSERT INTO ' + this.table + ' (\'' + keys.join('\',\'') + '\') VALUES ($'+keys.join(',$')+')';
@@ -152,18 +159,18 @@ module.exports = function(app){
 			});
 		}
 
-		this.db.run(sql, fields, function(err){
+		db.run(sql, fields, function(err){
 			if (err) return defer.reject(err);
 			defer.resolve({id:fields.$id || this.lastID, changes:this.changes});
 		});
 
 		return defer.promise;
 	};
-	
+
 	Base.prototype.get = function(name) {
 		return this.attrs[name];
 	};
-	
+
 	Base.prototype.set = function(name, value) {
 		if (_.isObject(name)) {
 			_.extend(this.attrs, name);
@@ -173,7 +180,7 @@ module.exports = function(app){
 		}
 		return this;
 	};
-	
+
 	Base.prototype.on = function(type, callback) {
 		if (!_.isArray(this._listeners[type])) {
 			this._listeners[type] = [];
@@ -182,7 +189,7 @@ module.exports = function(app){
 
 		return this;
 	};
-	
+
 	Base.prototype.off = function(type, callback) {
 		var arr = this._listeners[type];
 		if (_.isArray(arr)) {
@@ -203,12 +210,12 @@ module.exports = function(app){
 
 		return this;
 	};
-	
+
 	Base.prototype.remove = function(callback) {
 		var defer = Q.derfer();
 
 		if (this.id) {
-			this.db.run('DELETE FROM ' + this.table + ' WHERE id=?', this.id, function(err){
+			db.run('DELETE FROM ' + this.table + ' WHERE id=?', this.id, function(err){
 				if (err) return defer.reject(err);
 				defer.resolve();
 			});
@@ -218,10 +225,10 @@ module.exports = function(app){
 
 		return defer.promise;
 	};
-	
+
 	function idGetter() {
 		return this.attrs.id;
 	}
 
-	return Base;
-};
+	return {name:'Base', model:Base};
+}();
