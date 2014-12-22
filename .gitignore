@@ -1,5 +1,6 @@
 public/js/main.js
 public/js/main.min.js
+public/js/product.js
 public/lib
 npm-debug.log
 node_modules
