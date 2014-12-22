@@ -162,6 +162,9 @@ a {
 	background-repeat:no-repeat;
 	background-size:cover;
 }
+#globalHeader .links > li.cart .items li a {
+	padding:0;
+}
 #globalHeader .links > li.cart .items li strong,
 #globalHeader .links > li.cart .items li small {
 	display:block;

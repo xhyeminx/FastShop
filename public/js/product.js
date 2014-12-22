@@ -43,7 +43,7 @@ jQuery(function($){
 			dataType : 'json',
 			success : function(data) {
 				var html = '';
-			
+
 				for (var i=0; i < data.options.length; i++) {
 					html += '<option value="'+data.options[i].id+'">' + data.options[i].name + '</option>';
 				}
@@ -60,13 +60,17 @@ jQuery(function($){
 	수신할 데이터 형식은 JSON
 	*/
 	$('#add_to_cart').on('click', function(event){
+		event.preventDefault();
 		$.ajax({
 			type: 'POST',
 			url: '/api/cart',
 			data : {option_id: $('.size > select').val(), quantity: 1},
 			dataType : 'json',
 			success : function(data)  {
-				
+				// 정상적으로 추가가 되었다면 카트를 업데이트한다.
+				if (data.status == 1) {
+					updateCart();
+				}
 			}
 		});
 	});

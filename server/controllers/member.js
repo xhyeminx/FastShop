@@ -65,7 +65,7 @@ module.exports = function(app) {
 			return false;
 		}
 
-		app.models.User.findOne({$email:body.email}, function(err, user){
+		User.findOne({$email:body.email}, function(err, user){
 			if (err) {
 				callback({ error : '데이터베이스 에러: ' + err });
 				return false;

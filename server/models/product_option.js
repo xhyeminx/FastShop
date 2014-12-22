@@ -22,7 +22,7 @@ module.exports = function() {
 			return Base.prototype.save.call(this);
 		},
 		toJSON : function() {
-			var obj = _.pick(this.attrs, 'name', 'stock', 'order', 'active');
+			var obj = _.pick(this.attrs, 'product_id', 'name', 'stock', 'order', 'active');
 			obj.color = this.get('color');
 			obj.size  = this.get('size');
 			return obj;

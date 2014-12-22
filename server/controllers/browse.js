@@ -1,11 +1,9 @@
 'use strict';
 
-var util = require(__dirname + '/../lib/util');
-
 module.exports = function(app) {
 	// common task
 	app.use(function(req, res, next){
-		if (!/^\/(browse|api\/products)(\/|$)/.test(req.path)) return next();
+		if (/^\/api\//.test(req.path)) return next();
 
 		// get categories
 		Category.find({$parent_id : 0})
@@ -103,7 +101,7 @@ module.exports = function(app) {
 	app.get('/api/products/:product_id/options(/:color)?', function(req, res){
 		ProductOption.find({$product_id:req.params.product_id, orderBy:'`order`'}).then(
 			function (options) {
-				options = _.map(options, function(opt){ return opt.toJSON(); });
+				options = _.map(options, function(opt){ var id = +opt.id; opt = opt.toJSON(); opt.id = id; return opt; });
 
 				if (req.params.color) {
 					options = _.where(options, {color:req.params.color.substr(1)});
@@ -111,7 +109,7 @@ module.exports = function(app) {
 				} else {
 					options = _.chain(options).pluck('color').unique().value();
 				}
-				
+
 				res.json({options:options});
 			},
 			function (err) {

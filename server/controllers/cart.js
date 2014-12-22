@@ -6,71 +6,68 @@ module.exports = function(app) {
 	});
 
 	app.get('/api/cart', function(req, res){
+		/*
 		if (!req.session.user) {
 			res.status(403).json({error:'회원 권한이 필요합니다.'});
 			return false;
 		}
+		*/
 
-		var userId = req.session.user.id;
+		var userId = /*req.session.user.id*/1;
 
-		db.all('SELECT * FROM carts WHERE user_id=?', userId, function(err, rows){
-			if (err) return res.status(500).json({error:'데이터베이스 에러'});
+		db.all('SELECT option_id, quantity FROM carts WHERE user_id=?', userId, function(err, rows){
+			if (err) {
+				console.error(err.stack);
+				return res.status(500).json({error:'데이터베이스 에러: '+err});
+			}
 
-			var ids = [], rowById = {};
-			app._.each(rows, function(row){
-				ids.push(row.option_id);
-				rowById[row.option_id] = row;
-			});
+			ProductOption.find({$id:_.pluck(rows, 'option_id')})
+				.then(function(options) {
+					var productIds = [];
 
-			db.all(
-				'SELECT o.id option_id, o.name option_name, o.stock, p.* FROM product_options o, products p WHERE o.id IN ('+ids.join(',')+') AND o.product_id=p.id',
-				function(err, rows) {
-					if (err) return res.status(500).json({error:'데이터베이스 에러'});
-					
-					app._.each(rows, function(row, idx){
-						var product = app._.pick(row, 'id', 'name', 'description', 'price', 'retail_price');
-						var option  = {id:row.option_id, stock:row.stock};
-						var optionName = row.option_name.split('|');
-						
-						option.color = optionName[0];
-						option.size = optionName[1];
-						option.product = product;
-						option.quantity = rowById[option.id].quantity;
-						
-						var images = row.images.split('\n');
-						product.images_l = app._.map(images, function(url){ return {url:'/files/'+url} });
-						product.images_m = app._.map(images, function(url){ return {url:'/resize/434x772/'+url, width:434, height:772} });
-						product.images_s = app._.map(images, function(url){ return {url:'/resize/204x362/'+url, width:204, height:362} });
-						
-						app._.each(app.locals.categories, function(cate) {
-							var parent = cate;
+					_.each(options, function(opt){
+						var row = _.findWhere(rows, {option_id:opt.id});
 
-							cate = app._.findWhere(cate.children, {id: row.category_id});
-							if (cate && row.category_id === cate.id) {
-								product.category = cate;
-								return false;
-							}
-						});
-
-						rows[idx] = option;
+						productIds.push(+opt.get('product_id'));
+						_.extend(row, _.pick(opt.toJSON(), 'product_id', 'color', 'size', 'stock'));
+						row.id = opt.id;
+						delete row.option_id;
 					});
-					
-					res.json({status:1, status_text:'OK', items:rows});
-				}
-			);
+
+					return Product.find({$id:productIds});
+				})
+				.then(function(products) {
+					_.each(products, function(product){
+						_.chain(rows).where({product_id:product.id}).each(function(row){
+							row.product = product.toJSON();
+							delete row.product_id;
+							delete row.product.options;
+						});
+					});
+
+					res.json({status:1, statusText:'OK', items:rows});
+				})
+				.fail(function(err) {
+					console.error(err.stack);
+					return res.status(500).json({error:'데이터베이스 에러: ' + err});
+				});
 		});
 	});
 
 	app.post('/api/cart', function(req, res){
+		/*
 		if (!req.session.user) {
 			res.status(403).json({error:'회원 권한이 필요합니다.'});
 			return false;
+		}*/
+		
+		if (!+req.body.option_id) {
+			return res.status(400).json({error:'option_id를 설정하세요.'});
 		}
 
-		where = {
-			$user_id : req.session.user_id,
-			$option_id : req.body.option_id,
-			$quantity : req.body.quantity || 1
+		var where = {
+			$user_id : /*req.session.user_id*/1,
+			$option_id : +req.body.option_id
 		};
 
 		db.get(
@@ -79,15 +76,25 @@ module.exports = function(app) {
 			function(err, row) {
 				var sql = '';
 
-				if (err) return res.status(500).json({error:'데이터베이스 에러'});
-				if (row) {
-					sql = 'INSERT INTO carts (user_id, option_id, quantity) VALUES ($user_id, $option_id, $quantity)';
-				} else {
-					sql = 'UPDATE carts SET quantity=quantity+$quantity WHERE user_id=$user_id AND option_id=$option_id';
+				if (err) {
+					console.error(err.stack);
+					return res.status(500).json({error:'데이터베이스 에러: ' + err});
 				}
 				
+				// set quantity value
+				where.$quantity = +req.body.quantity || 1;
+
+				if (row) {
+					sql = 'UPDATE carts SET quantity=quantity+$quantity WHERE user_id=$user_id AND option_id=$option_id';
+				} else {
+					sql = 'INSERT INTO carts (user_id, option_id, quantity) VALUES ($user_id, $option_id, $quantity)';
+				}
+
 				db.run(sql, where, function(err){
-					if (err) return res.status(500).json({error:'데이터베이스 에러: '+err});
+					if (err) {
+						console.error(err.stack);
+						return res.status(500).json({error:'데이터베이스 에러: '+err});
+					}
 					res.json({status:1, statusText:'OK'});
 				});
 			}
