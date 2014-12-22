@@ -28,7 +28,7 @@ module.exports = function(app) {
 	});
 
 	app.get('/browse/:category', function(req, res){
-		var sql = 'SELECT * FROM products', where = {filter:[]};
+		var where = {filter:[]};
 		
 		_.each(res.locals.categories, function(obj){
 			if (req.params.category === obj.slug) {
@@ -75,10 +75,10 @@ module.exports = function(app) {
 			.then(function(prod){
 				res.locals.product = prod.toJSON();
 
-				return Product.find({$category_id:prod.category.id, filter:'id != '+prod.category.id, limit:6});
+				return Product.find({$category_id:prod.category.id, filter:'id != '+prod.id, limit:6});
 			})
 			.then(function(products){
-				res.locals.suggestion = products;
+				res.locals.suggestion = _.map(products, function(prod){ return prod.toJSON(); });
 			}, function(err){
 				console.log(err.stack);
 			})
@@ -94,39 +94,30 @@ module.exports = function(app) {
 
 	// product information
 	app.get('/api/products/:product_id', function(req, res){
-		db.get('SELECT * FROM products WHERE id = ?', req.params.product_id, function(err, product){
-			res.locals.product = product;
-			util.populateProduct(product, function(){
-				res.json(product);
-			});
+		Product.get(req.params.product_id).then(function(product){
+			res.json(product.toJSON());
 		});
 	});
 
 	// product options
 	app.get('/api/products/:product_id/options(/:color)?', function(req, res){
-		db.all('SELECT * FROM product_options WHERE product_id = ? ORDER BY `order`', req.params.product_id, function(err, options){
-			if (err) return res.json({error:'데이터베이스 에러: ' + err});
-			
-			var opts = {};
-			
-			options.forEach(function(opt){
-				var names = opt.name.split('|');
-				
-				if (!opts.hasOwnProperty(names[0])) {
-					opts[names[0]] = [];
+		ProductOption.find({$product_id:req.params.product_id, orderBy:'`order`'}).then(
+			function (options) {
+				options = _.map(options, function(opt){ return opt.toJSON(); });
+
+				if (req.params.color) {
+					options = _.where(options, {color:req.params.color.substr(1)});
+					options.forEach(function(opt){ opt.name = opt.size; });
+				} else {
+					options = _.chain(options).pluck('color').unique().value();
 				}
-
-				opts[names[0]].push(opt);
-				opt.name = names[1];				
-			});
-			
-			if (req.params.color) {
-				opts = opts[req.params[0]] || [];
-			} else {
-				opts = Object.keys(opts);
+				
+				res.json({options:options});
+			},
+			function (err) {
+				console.log(err.stack);
+				res.json({error:'데이터베이스 에러: ' + err});
 			}
-
-			res.json({options:opts});
-		});
+		);
 	});
 };

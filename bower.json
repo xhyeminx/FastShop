@@ -1,0 +1,29 @@
+{
+  "name": "FastShop",
+  "version": "0.3.0",
+  "homepage": "https://github.com/taggon/FastShop",
+  "authors": [
+    "TaegonKim <gonom9@gmail.com>"
+  ],
+  "description": "A sample online shop for my class.",
+  "keywords": [
+    "fastshop",
+    "sample",
+    "do-not-use"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/lib",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "2.1.*",
+	"bootstrap": "3.3.*",
+	"underscore": "1.7.*",
+	"modernizr": "2.8.*"
+  }
+}

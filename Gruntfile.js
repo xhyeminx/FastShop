@@ -4,12 +4,13 @@ module.exports = function(grunt) {
 
   // Project configuration.
   grunt.initConfig({
-	clean : ['public/js/main.min.js'],
+	clean : ['public/js/main.min.js', 'public/css/main.css'],
     jshint : {
 		files : ['public/js/main.js', 'controllers/js/*.js'],
 		options : {
 			globals : {
-				jQuery : true
+				jQuery : true,
+				Modernizr : true
 			}
 		}
 	},
@@ -22,6 +23,24 @@ module.exports = function(grunt) {
 				mangle: false
 			}
 		}
+	},
+	less : {
+		development : {
+			options : {
+				paths : ['public/css']
+			},
+			files : {
+				'public/css/main.css': 'public/css/main.less'
+			}
+		},
+		production : {
+			options : {
+				paths : ['public/css']
+			},
+			files : {
+				'public/css/main.css': 'public/css/main.less'
+			}
+		}
 	}
   });
 
@@ -29,8 +48,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-less');
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'clean', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'clean', 'less', 'uglify']);
 
+  // Watch and compile less
+  grunt.registerTask('watch', ['less']);
 };

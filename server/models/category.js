@@ -28,11 +28,15 @@ var Category = Base.extend({
 
 		return defer.promise;
 	},
+	hasParent : function() {
+		return !!this.attrs.parent_id;
+	},
 	toJSON : function() {
 		return {
 			id : this.id,
 			name : this.attrs.name,
 			slug : this.attrs.slug,
+			hasParent : this.hasParent(),
 			children : _.map(this.children, function(obj){ return obj.toJSON(); })
 		}
 	}

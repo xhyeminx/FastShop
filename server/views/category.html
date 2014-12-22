@@ -22,7 +22,7 @@
 	<div class="breadcrumb">
 		<a href="/">Home</a>
 		{{#root_category}} <i class="fa fa-angle-right"></i> <a href="/browse/{{slug}}">{{name}}</a>{{/root_category}}
-		{{#category}}{{#parent}} <i class="fa fa-angle-right"></i> <a href="/browse/{{slug}}">{{name}}</a>{{/parent}}{{/category}}
+		{{#category}}{{#hasParent}} <i class="fa fa-angle-right"></i> <a href="/browse/{{slug}}">{{name}}</a>{{/hasParent}}{{/category}}
 	</div>
 
 	<ul class="stream clearbox">

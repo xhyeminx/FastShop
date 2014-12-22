@@ -123,13 +123,91 @@ jQuery(function($){
 			}
 		});
 	});
+	
+	// 장바구니 정보를 가지고 와서 업데이트한다.
+	
+	var $cartTemplate = $('#globalHeader li.cart .items li').remove();
+
+	function updateCart() {
+		// GET /api/cart 호출 후 반환된 JSON 데이터에 있는 상품의 수량(quantity)을
+		// 모두 더한 값을 오른쪽 상단("장바구니" 오른쪽)의 상품 갯수에 업데이트한다. 
+		$.ajax({
+			type : 'GET',
+			url  : '/api/cart',
+			dataType : 'json',
+			success : function(data) {
+				var quantity = 0, item, $ul;
+
+				$ul = $('#globalHeader .items > ul').empty();
+
+				for(var i=0; i < data.items.length; i++) {
+					item = data.items[i];
+					quantity += item.quantity;
+					
+					// $cartTemplate을 복제한 후 데이터를 채워넣고
+					// 부모가 될 ul에 추가한다.
+					$cartTemplate.clone()
+						.find('a').attr('href', '/browse/'+item.product.category.slug+'/'+item.product.id).end()
+						.find('img').css('background-image', 'url('+item.product.images_s[0].url+')').end()
+						.find('strong').text(item.product.name).end()
+						.find('small').text(item.color + ', ' + item.size).end()
+						.appendTo($ul);
+				}
+				
+				$('#globalHeader em.count').text(quantity);
+			},
+			error : function() {
+				
+			}
+		});
+	}
+	
+	// 페이지를 읽자마자 카트 업데이트 실행
+	updateCart();
+	
+	// "장바구니"를 클릭하면 카트 레이어 보이기/숨기기
+	$('#globalHeader .cart > a').on('click', function(event){
+		event.preventDefault();
+
+		var $this = $(this), $items = $this.next('.items');
+		
+		if ($items.hasClass('show')) {
+			$items.removeClass('show');
+			// hide
+			/*$items.on('transitionEnd webkitTransitionEnd WebkitTransitionEnd mozTransitionEnd msTransitionEnd oTransitionEnd', function(){
+				$items.hide().off('transitionEnd webkitTransitionEnd WebkitTransitionEnd mozTransitionEnd msTransitionEnd oTransitionEnd');
+			});*/
+			//setTimeout(function(){ $items.hide(); }, 350);
+			
+			$(document).off('mousedown.cart');
+		} else {
+			$items.show();
+			setTimeout(function(){ $items.addClass('show'); });
+			
+			$(document).on('mousedown.cart', function(){
+				$this.trigger('click'); // $this.click();
+			});
+		}
+	});
+	
+	$('#globalHeader .cart').on('mousedown', function(event){
+		event.stopPropagation();
+	});
+	
+	$('.menubar > ul > li')
+		.on('mouseenter', function(event){
+			$(this).addClass('active').siblings('li').removeClass('active');
+		})
+		.on('mouseleave', function(event){
+			$(this).removeClass('active');
+		})
+		.on('focus', 'a', function(event){
+			$(this).closest('.menubar > ul > li').trigger('mouseenter');
+		})
+		.on('blur', 'a', function(event){
+			$(this).closest('.menubar > ul > li').trigger('mouseleave');
+		});
 });
-
-
-
-
-
-
 
 
 

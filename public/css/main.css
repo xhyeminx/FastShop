@@ -270,7 +270,7 @@ a {
 	border-width: 7px;
 	margin-left:-4px;
 }
-#main .menubar li:hover .submenu, #main .menubar li.active .submenu {
+#main .menubar li.active .submenu {
 	display: block;
 }
 #main .menubar .submenu li:not(:last-child) {
