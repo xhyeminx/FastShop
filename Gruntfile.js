@@ -4,9 +4,19 @@ module.exports = function(grunt) {
 
   // Project configuration.
   grunt.initConfig({
+	watch : {
+		scripts: {
+			files: ['<%= uglify.build.src %>', '!public/js/*.min.js'],
+			tasks: ['jshint', 'uglify']
+		},
+		less: {
+			files: 'public/css/*.less',
+			tasks: ['less:development']
+		}
+	},
 	clean : ['public/js/main.min.js', 'public/css/main.css'],
     jshint : {
-		files : ['public/js/main.js', 'controllers/js/*.js'],
+		files : ['public/js/src/main.js', 'controllers/js/*.js'],
 		options : {
 			globals : {
 				jQuery : true,
@@ -15,13 +25,13 @@ module.exports = function(grunt) {
 		}
 	},
 	uglify : {
-		compress : {
-			files : {
-				'public/js/main.min.js': ['public/js/main.js']
-			},
-			options: {
-				mangle: false
-			}
+		options: {
+			beautify: true,
+			report: 'gzip'
+		},
+		build : {
+			src: ['public/js/main.js'],
+			dest: 'public/js/main.min.js'
 		}
 	},
 	less : {
@@ -53,7 +63,4 @@ module.exports = function(grunt) {
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'clean', 'less', 'uglify']);
-
-  // Watch and compile less
-  grunt.registerTask('watch', ['less']);
 };

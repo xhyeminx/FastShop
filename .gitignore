@@ -4,6 +4,7 @@ public/js/product.js
 public/lib
 npm-debug.log
 node_modules
+bower_components
 files/434x772
 files/204x362
 fastshop.db
