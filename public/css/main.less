@@ -6,6 +6,9 @@ body {
 	padding:0;
 	margin:0;
 }
+.Montserrat {
+	font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+}
 a {
 	color:inherit;
 	text-decoration:none;
@@ -185,7 +188,8 @@ a {
 	margin-top: 10px;
 	padding: 5px;
 	font-weight: bold;
-	font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+
+	.Montserrat
 }
 #globalHeader .links > li.cart .items > a:hover {
 	background: #000;
@@ -220,7 +224,7 @@ a {
 #main .menubar a {
 	display: block;
 	white-space: nowrap;
-	font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+	.Montserrat;
 	transition: color .2s, background-color .2s;
 	-webkit-transition: color .2s, background-color .2s;
 	-moz-transition: color .2s, background-color .2s;
@@ -455,7 +459,7 @@ a {
 	float: left;
 }
 #content.product .details .price {
-	font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+	.Montserrat
 }
 #content.product .details .price sup {
 	font-size: .6em;
@@ -468,7 +472,7 @@ a {
 	display: inline-block;
 	margin-left: 1em;
 	color: #999;
-	font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+	.Montserrat
 }
 #content.product .details .options {
 	padding-top: 1.3em;
@@ -512,7 +516,7 @@ a {
 #content.product .details dt {
 	font-size: 1.3em;
 	font-weight: bold;
-	font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+	.Montserrat;
 	text-transform: uppercase;
 	border-top: 1px solid #eee;
 	margin-top: 1em;
@@ -522,14 +526,17 @@ a {
 	display: block;
 	padding-top: 1em;
 }
+.transition(@property) {
+	transition: @property .3s ease-in-out;
+	-webkit-transition: @property .3s ease-in-out;
+	-moz-transition: @property .3s ease-in-out;
+	-ms-transition: @property .3s ease-in-out;
+	-o-transition: @property .3s ease-in-out;
+}
 #content.product .details dt a:before {
 	content : '+';
 	float: right;
-	transition: transform .3s ease-in-out;
-	-webkit-transition: transform .3s ease-in-out;
-	-moz-transition: transform .3s ease-in-out;
-	-ms-transition: transform .3s ease-in-out;
-	-o-transition: transform .3s ease-in-out;
+	.transition(transform);
 	transform-origin: 50% 50%;
 	-webkit-transform-origin: 50% 50%;
 }
@@ -776,48 +783,58 @@ a {
 	font-size:1.1em;
 	font-weight: bold;
 }
-#content.error h1 {
-	text-align: center;
-	font-size: 10em;
-	font-family: 'Montserrat', Helvetica, Arial, sans-serif;
-	margin: 1em 0 0;
+#content.error {
+	h1 {
+		text-align: center;
+		font-size: 10em;
+		font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+		margin: 1em 0 0;
+	}
+
+	p {
+		text-align: center;
+		margin-bottom: 10em;
+	}
 }
-#content.error p {
-	text-align: center;
-	margin-bottom: 10em;
-}
+
 #globalFooter {
 	background:#000;
 	padding:50px 0 20px;
+
+	.logo {
+		float: left;
+		width: 176px;
+		height: 46px;
+		margin: 0 90px 30px 0;
+	}
+
+	section {
+		float: left;
+		margin-right: 90px;
+
+		h3 {
+			margin: 0 0 15px;
+			font-family: 'Montserrat', Helvetica, Arial, sans-serif;
+			text-transform: uppercase;
+			color: #aaa;
+			font-weight: normal;
+		}
+
+		ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			color: #fff;
+			line-height: 1.8em;
+			font-size: 1.05em;
+		}
+	}
+
+	section.connect {
+		float: right;
+	}
 }
-#globalFooter .logo {
-	float: left;
-	width: 176px;
-	height: 46px;
-	margin: 0 90px 30px 0;
-}
-#globalFooter section {
-	float: left;
-	margin-right: 90px;
-}
-#globalFooter section.connect {
-	float: right;
-}
-#globalFooter section h3 {
-	margin: 0 0 15px;
-	font-family: 'Montserrat', Helvetica, Arial, sans-serif;
-	text-transform: uppercase;
-	color: #aaa;
-	font-weight: normal;
-}
-#globalFooter section ul {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	color: #fff;
-	line-height: 1.8em;
-	font-size: 1.05em;
-}
+
 #globalFooter section a:hover,
 #globalFooter section a:focus {
 	text-decoration: underline;
